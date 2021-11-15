@@ -1,4 +1,5 @@
 package com.example.mvvmretrofit
+
 import android.app.Activity
 import android.content.Context
 import androidx.databinding.ObservableField
@@ -8,11 +9,9 @@ import com.example.mvvmretrofit.databinding.ActivityMainBinding
 
 class MainViewModel: ViewModel() {
 
-    var ovf = ObservableField("")
+    val ovf = ObservableField("")
 
     init {
-
-        ovf.set("Title")
 
     }
 
@@ -26,7 +25,12 @@ class MainViewModel: ViewModel() {
     fun data(context: Context, binding: ActivityMainBinding){
 
         val dataModel = DataModel()
-        dataModel.getData(context, binding, ArrayList())
+        dataModel.dynamicData(context, binding, ArrayList())
+        dataModel.titleBar(object : DataModel.Title{
+            override fun getText(text: String?) {
+                ovf.set(text)
+            }
+        })
 
     }
 
