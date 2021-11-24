@@ -3,29 +3,38 @@ package com.example.mvvmretrofit
 import android.app.Activity
 import android.content.Context
 import androidx.databinding.ObservableField
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.*
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.mvvmretrofit.databinding.ActivityMainBinding
 
-class MainViewModel: ViewModel() {
+class MainViewModel(private val binding: ActivityMainBinding): ViewModel() {
 
     val ovf = ObservableField("")
+    var liveData = MutableLiveData<ArrayList<MainBean>>()
 
     init {
 
+        initLiveData()
+
     }
 
-    fun recycler(activity: Activity, binding: ActivityMainBinding){
+    private fun initLiveData() {
+
+        liveData.value = ArrayList()
+
+    }
+
+    fun recycler(activity: Activity){
 
         binding.recyclerView.setHasFixedSize(true)
         binding.recyclerView.layoutManager = LinearLayoutManager(activity)
 
     }
 
-    fun data(context: Context, binding: ActivityMainBinding){
+    fun data(context: Context){
 
         val dataModel = DataModel()
-        dataModel.dynamicData(context, binding, ArrayList())
+        dataModel.dynamicData(context, binding, liveData.value)
         dataModel.titleBar(object : DataModel.Title{
             override fun getText(text: String?) {
                 ovf.set(text)
