@@ -6,9 +6,9 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mvvmretrofit.databinding.MainListItemBinding
-import java.util.*
+import kotlin.collections.ArrayList
 
-class RvAdapter(private val list: ArrayList<MainBean>, private val context: Context) : RecyclerView.Adapter<ItemViewHolder>() {
+class RvAdapter(private val list: ArrayList<MainBean>?, private val context: Context) : RecyclerView.Adapter<ItemViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
         val binding: MainListItemBinding = DataBindingUtil.inflate(LayoutInflater.from(context), R.layout.main_list_item, parent, false)
@@ -22,15 +22,15 @@ class RvAdapter(private val list: ArrayList<MainBean>, private val context: Cont
 
     inner class AddBindViewHolder {
 
-        fun setBindViewHolder(holder: ItemViewHolder, arrAdapter: ArrayList<MainBean>, position: Int) {
-            val mainBean = arrAdapter[position]
+        fun setBindViewHolder(holder: ItemViewHolder, arrayList: ArrayList<MainBean>?, position: Int) {
+            val mainBean = arrayList?.get(position)
             holder.bindItem(mainBean)
         }
 
     }
 
     override fun getItemCount(): Int {
-        return list.size
+        return if (list?.size!! > 0) list.size else -1
     }
 
 }
