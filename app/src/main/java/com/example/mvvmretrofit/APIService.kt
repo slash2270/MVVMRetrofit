@@ -12,10 +12,9 @@ interface APIService { // uri
     @GET("photos/")
     fun observableData2(): Observable<List<MainBean>>
 
-    /* 注解里传入 网络请求 的部分URL地址
-       Retrofit把网络请求的URL分成了两部分：一部分放在Retrofit对象里，另一部分放在网络请求接口里
-       如果接口里的url是一个完整的网址，那么放在Retrofit对象里的URL可以忽略
-       采用Observable<...>接口 */
+    /*  Retrofit 把網絡請求的 URL 檢測了兩部分：一個人改造 Retrofit 對象裡，另一部分改造網絡請求接口裡
+        如果接口裡的 url 是一個完整的網址，那麼重新安裝對象裡的 URL 可以忽略
+        採用Observable<...>接口 */
 
     @GET("photos/")
     fun callData(): Call<List<MainBean>>

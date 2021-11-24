@@ -1,7 +1,6 @@
 package com.example.mvvmretrofit
 
 import android.content.Context
-import android.util.Log
 import com.example.mvvmretrofit.databinding.ActivityMainBinding
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -50,21 +49,21 @@ class DataModel {
         val observable1 = apiService.observableData1()
         val observable2 = apiService.observableData2()
 
-        observable1.subscribeOn(Schedulers.io()) // （初始被观察者）切换到IO线程进行网络请求1
-            .observeOn(AndroidSchedulers.mainThread()) // （新观察者）切换到主线程 处理网络请求1的结果
+        observable1.subscribeOn(Schedulers.io()) // （觀察者）切換到IO線程進行網絡請求1
+            .observeOn(AndroidSchedulers.mainThread()) // （新觀察者）切換到主線程處理網絡請求1的結果
             .doOnNext { response ->
                 response(response, arrayList)
             }
             .observeOn(Schedulers.io())
-            // （新被观察者，同时也是新观察者）切换到IO线程去发起登录请求
-            // 特别注意：因为flatMap是对初始被观察者作变换，所以对于旧被观察者，它是新观察者，所以通过observeOn切换线程
-            // 但对于初始观察者，它则是新的被观察者
+            // （新被觀察者，同時也是新觀察者）切換到IO線程去發起登錄請求
+            // 特別注意：因為平面地圖是對最終被觀察者作變換，所以舊被觀察者，它是新觀察者，所以通過觀察切換線程
+            // 但對於最初的觀察者，那才是新的被觀察者
             .flatMap {
-                // 作变换，即作嵌套网络请求2
+                // 作變換，即作編碼網絡請求2
                 observable2
             }
-            .observeOn(AndroidSchedulers.mainThread()) // （初始观察者）切换到主线程 处理网络请求2的结果
-            .subscribe({ response -> // 对第2次网络请求返回的结果进行操作
+            .observeOn(AndroidSchedulers.mainThread()) // (初始觀察者）切換到主線程處理網絡請求2的結果
+            .subscribe({ response -> // 對第2次網絡請求返回的結果進行操作
                 response(response, arrayList)
                 adapter(context, binding, arrayList)
             }, { println("網路連線失敗") })
