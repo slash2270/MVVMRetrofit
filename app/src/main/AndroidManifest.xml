@@ -17,7 +17,7 @@
         android:theme="@style/Theme.MVVMRetrofit"
         android:fullBackupContent="@xml/backup_descriptor"
         android:name="androidx.multidex.MultiDexApplication">
-        <activity android:name=".MainActivity"
+        <activity android:name=".activity.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

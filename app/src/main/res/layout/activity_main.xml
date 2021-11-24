@@ -7,7 +7,7 @@
 
         <variable
             name="model"
-            type="com.example.mvvmretrofit.MainViewModel" />
+            type="com.example.mvvmretrofit.model.MainViewModel" />
 
     </data>
 

@@ -1,7 +1,12 @@
-package com.example.mvvmretrofit
+package com.example.mvvmretrofit.model
 
 import android.content.Context
+import android.util.Log
+import com.example.mvvmretrofit.impl.API
+import com.example.mvvmretrofit.bean.ColorBean
+import com.example.mvvmretrofit.adapter.RvAdapter
 import com.example.mvvmretrofit.databinding.ActivityMainBinding
+import com.example.mvvmretrofit.db.DbManager
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
@@ -29,7 +34,7 @@ class DataModel {
 
     }
 
-    fun dynamicData(context: Context, binding: ActivityMainBinding, arrayList: ArrayList<MainBean>?) {
+    fun dynamicData(context: Context, binding: ActivityMainBinding, arrayList: ArrayList<ColorBean>?) {
 
         val gson: Gson = GsonBuilder()
             .setDateFormat("yyyy-MM-dd HH:mm:ss")
@@ -43,7 +48,7 @@ class DataModel {
             .baseUrl("https://jsonplaceholder.typicode.com/") // url
             .build()
 
-        val apiService = retrofit.create(APIService::class.java)
+        val apiService = retrofit.create(API::class.java)
 
         // 連續連線
         val observable1 = apiService.observableData1()
@@ -62,11 +67,16 @@ class DataModel {
                 // 作變換，即作編碼網絡請求2
                 observable2
             }
+            .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread()) // (初始觀察者）切換到主線程處理網絡請求2的結果
             .subscribe({ response -> // 對第2次網絡請求返回的結果進行操作
                 response(response, arrayList)
                 adapter(context, binding, arrayList)
+                //DbManager.addColors(arrayList)
+                //println("取得list " + arrayList?.size)
             }, { println("網路連線失敗") })
+
+        //DbManager.addColors(listOf(ColorBean("1","a","t")))
 
         /*merge(observable1, observable2).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe{
             val list3 = ArrayList(it)
@@ -104,18 +114,18 @@ class DataModel {
 
     }
 
-    private fun response(response: List<MainBean>, list: ArrayList<MainBean>?){
+    private fun response(response: List<ColorBean>, list: ArrayList<ColorBean>?){
 
         response.isNotEmpty().apply {
             //Log.d("取得Response ", response.size.toString())
             for(i in 0 until response.size - 4995){
-                list?.add(MainBean(response[i].id, response[i].title, response[i].thumbnailUrl))
+                list?.add(ColorBean(response[i].id, response[i].title, response[i].thumbnailUrl))
             }
         }
 
     }
 
-    private fun adapter(context: Context, binding: ActivityMainBinding, arrayList: ArrayList<MainBean>?) {
+    private fun adapter(context: Context, binding: ActivityMainBinding, arrayList: ArrayList<ColorBean>?) {
 
         val rvAdapter = RvAdapter(arrayList, context)
         binding.recyclerView.adapter = rvAdapter
