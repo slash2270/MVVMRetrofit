@@ -1,13 +1,10 @@
 package com.example.mvvmretrofit.model
 
 import android.content.Context
-import android.util.Log
 import com.example.mvvmretrofit.impl.API
 import com.example.mvvmretrofit.bean.ColorBean
 import com.example.mvvmretrofit.adapter.RvAdapter
 import com.example.mvvmretrofit.databinding.ActivityMainBinding
-import com.example.mvvmretrofit.db.DbManager
-import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.schedulers.Schedulers
@@ -36,7 +33,7 @@ class DataModel {
 
     fun dynamicData(context: Context, binding: ActivityMainBinding, arrayList: ArrayList<ColorBean>?) {
 
-        val gson: Gson = GsonBuilder()
+        val gson = GsonBuilder()
             .setDateFormat("yyyy-MM-dd HH:mm:ss")
             .create()
 
