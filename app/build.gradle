@@ -75,7 +75,7 @@ dependencies {
     implementation 'io.reactivex.rxjava3:rxandroid:3.0.0' //Rx3
     implementation 'androidx.multidex:multidex:2.0.1' // implentation方法 > 64k 5.0以下適用 5.0以上用2.0以上版本
 
-    def room_version = "2.3.0"
+    def room_version = "2.4.0"
 
     implementation "androidx.room:room-runtime:$room_version"
     annotationProcessor "androidx.room:room-compiler:$room_version" // For Kotlin use
@@ -95,6 +95,7 @@ dependencies {
 
     def lifecycle_version = "2.4.0"
     def arch_version = "2.1.0"
+
     // 觀察者
     // ViewModel
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version")

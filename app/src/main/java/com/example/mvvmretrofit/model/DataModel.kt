@@ -1,12 +1,12 @@
 package com.example.mvvmretrofit.model
 
-import android.content.Context
+import android.util.Log
 import com.example.mvvmretrofit.impl.API
 import com.example.mvvmretrofit.bean.ColorBean
-import com.example.mvvmretrofit.adapter.RvAdapter
-import com.example.mvvmretrofit.databinding.ActivityMainBinding
+import com.example.mvvmretrofit.db.DbManager
 import com.google.gson.GsonBuilder
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.schedulers.Schedulers
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava3.RxJava3CallAdapterFactory
@@ -16,22 +16,25 @@ import kotlin.collections.ArrayList
 
 class DataModel {
 
-    interface Title {
+    interface Text {
         fun getText(text: String?)
     }
+    interface Dynamic {
+        fun getList(arrayList: ArrayList<ColorBean>)
+    }
 
-    fun titleBar(title: Title){
+    fun getTitle(text: Text) {
 
         val strBuilder = StringBuilder()
         listOf("Id", "\t", "\t", "\t", "\t", "\t", "\t", "\t", "\t", "\t", "\t", "\t", "\t", "Title", "\t", "\t", "\t", "\t", "\t", "\t", "\t", "\t", "\t", "\t", "\t", "\t", "Content")
             .forEach {
                 strBuilder.append(it)
             }
-        title.getText(strBuilder.toString())
+        text.getText(strBuilder.toString())
 
     }
 
-    fun dynamicData(context: Context, binding: ActivityMainBinding, arrayList: ArrayList<ColorBean>?) {
+    fun getList(dynamic: Dynamic, dbManager: DbManager) {
 
         val gson = GsonBuilder()
             .setDateFormat("yyyy-MM-dd HH:mm:ss")
@@ -51,11 +54,16 @@ class DataModel {
         val observable1 = apiService.observableData1()
         val observable2 = apiService.observableData2()
 
-        observable1.subscribeOn(Schedulers.io()) // （觀察者）切換到IO線程進行網絡請求1
+        val arrayList = ArrayList<ColorBean>()
+
+        observable1
+            .subscribeOn(Schedulers.io()) // （觀察者）切換到IO線程進行網絡請求1
+            .doOnError { error -> System.err.println("取得 error IO1 message is: " + error.message) }
             .observeOn(AndroidSchedulers.mainThread()) // （新觀察者）切換到主線程處理網絡請求1的結果
-            .doOnNext { response ->
-                response(response, arrayList)
-            }
+            /*.doOnNext { response ->
+                arrayList.addAll(ArrayList(response.filter { it.id.toInt() < 6 }))
+                Log.d("取得 result1 ", "${arrayList.size}")
+            }*/
             .observeOn(Schedulers.io())
             // （新被觀察者，同時也是新觀察者）切換到IO線程去發起登錄請求
             // 特別注意：因為平面地圖是對最終被觀察者作變換，所以舊被觀察者，它是新觀察者，所以通過觀察切換線程
@@ -65,43 +73,47 @@ class DataModel {
                 observable2
             }
             .subscribeOn(Schedulers.io())
+            .doOnError { error -> System.err.println("取得 error IO2 message is: " + error.message) }
             .observeOn(AndroidSchedulers.mainThread()) // (初始觀察者）切換到主線程處理網絡請求2的結果
-            .subscribe({ response -> // 對第2次網絡請求返回的結果進行操作
-                response(response, arrayList)
-                adapter(context, binding, arrayList)
-                //DbManager.addColors(arrayList)
-                //println("取得list " + arrayList?.size)
-            }, { println("網路連線失敗") })
+            /*.subscribe({ response -> // 對第2次網絡請求返回的結果進行操作
+                arrayList.addAll(ArrayList(response.filter { it.id.toInt() in 6..10  }))
+                dynamic.getList(arrayList)
+                if(arrayList.size > 5) {
+                    sqlInsert(dbManager, arrayList)
+                }
+                Log.d("取得 result2 ", "${arrayList.size}")
+            }, { Log.e("取得 Api Error ","網路連線失敗") })*/
 
-        //DbManager.addColors(listOf(ColorBean("1","a","t")))
-
-        /*merge(observable1, observable2).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe{
-            val list3 = ArrayList(it)
-            adapter(list3, context, binding) //資料合併2
-            println("result : ${it.size}")
-        }*/
+        Observable.merge(observable1, observable2).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe{ list->
+            if(arrayList.isEmpty()){
+                arrayList.addAll(ArrayList(list.filter { it.id.toInt() < 6 }))
+            }else{
+                arrayList.addAll(ArrayList(list.filter { it.id.toInt() in 6..10 }))
+                sqlInsert(dbManager, arrayList)
+            }
+            dynamic.getList(arrayList)
+            Log.d("取得result size : ", "${arrayList.size}")
+        }
 
         /*
             CoroutineScope(Dispatchers.IO).launch {
 
-                apiService.callData().enqueue(object : Callback<List<MainBean>> {
+                apiService.callData().enqueue(object : Callback<List<ColorBean>> {
 
                     override fun onResponse(
-                        call: Call<List<MainBean>>,
-                        response: Response<List<MainBean>>
+                        call: Call<List<ColorBean>>,
+                        response: Response<List<ColorBean>>
                     ) {
                         val data = response.body()
                         if (response.isSuccessful && data != null) {
-                            data.forEach {
-                                list.add(MainBean(it.id, it.title, it.thumbnailUrl))
-                            }
-                            adapter(list, context, binding)
+                            response(data, arrayList)
+                            dynamic.getList(arrayList)
                         }
                         //Log.d("取得1 ", arrView.size.toString())
 
                     }
 
-                    override fun onFailure(call: Call<List<MainBean>>, throwable: Throwable) {
+                    override fun onFailure(call: Call<List<ColorBean>>, throwable: Throwable) {
                         //Log.d("取得2 " , throwable.toString().trim { it <= ' ' })
                     }
                 })
@@ -111,21 +123,12 @@ class DataModel {
 
     }
 
-    private fun response(response: List<ColorBean>, list: ArrayList<ColorBean>?){
+    private fun sqlInsert(dbManager: DbManager, arrayList: ArrayList<ColorBean>) {
 
-        response.isNotEmpty().apply {
-            //Log.d("取得Response ", response.size.toString())
-            for(i in 0 until response.size - 4995){
-                list?.add(ColorBean(response[i].id, response[i].title, response[i].thumbnailUrl))
-            }
+        arrayList.forEach {
+            dbManager.addColors(it)
         }
-
-    }
-
-    private fun adapter(context: Context, binding: ActivityMainBinding, arrayList: ArrayList<ColorBean>?) {
-
-        val rvAdapter = RvAdapter(arrayList, context)
-        binding.recyclerView.adapter = rvAdapter
+        dbManager.closeDb()
 
     }
 

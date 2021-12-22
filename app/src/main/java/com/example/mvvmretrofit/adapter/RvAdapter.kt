@@ -33,7 +33,7 @@ class RvAdapter(private val list: ArrayList<ColorBean>?, private val context: Co
     }
 
     override fun getItemCount(): Int {
-        return if (list?.size!! > 0) list.size else -1
+        return if (list?.size!! > 0) list.size else 0
     }
 
 }

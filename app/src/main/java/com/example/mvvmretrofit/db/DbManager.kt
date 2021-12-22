@@ -5,7 +5,7 @@ import androidx.room.Room
 import kotlin.jvm.Synchronized
 import com.example.mvvmretrofit.bean.ColorBean
 
-object DbManager {
+class DbManager {
 
     private lateinit var mDataBase: DataBase
 
@@ -18,8 +18,8 @@ object DbManager {
 
     //新增
     @Synchronized
-    fun addColors(listColors: List<ColorBean>?) {
-        mDataBase.dbDao().addColors(listColors)
+    fun addColors(colorBean: ColorBean) {
+        mDataBase.dbDao().addColors(colorBean)
     }
 
     //新增

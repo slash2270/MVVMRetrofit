@@ -5,9 +5,13 @@ import com.example.mvvmretrofit.bean.ColorBean
 
 @Dao
 interface DbDao {
+
     //插入
     @Insert
-    fun addColors(listColors: List<ColorBean>?)
+    fun addColors(vararg colorBean: ColorBean)
+
+    /*@Insert
+    fun addColors(listColors: List<ColorBean>?)*/
 
     @Insert
     fun addColor(colorBean: ColorBean)
@@ -30,4 +34,5 @@ interface DbDao {
     //查詢
     @Query("SELECT * FROM color")
     fun getColors(): List<ColorBean>?
+
 }
