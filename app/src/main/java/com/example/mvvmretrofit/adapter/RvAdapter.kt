@@ -5,12 +5,12 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.example.mvvmretrofit.bean.ColorBean
+import com.example.mvvmretrofit.bean.Color
 import com.example.mvvmretrofit.R
 import com.example.mvvmretrofit.databinding.MainListItemBinding
 import kotlin.collections.ArrayList
 
-class RvAdapter(private val list: ArrayList<ColorBean>?, private val context: Context) : RecyclerView.Adapter<ItemViewHolder>() {
+class RvAdapter(private val list: ArrayList<Color>?, private val context: Context) : RecyclerView.Adapter<ItemViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
         val binding: MainListItemBinding = DataBindingUtil.inflate(LayoutInflater.from(context),
@@ -25,7 +25,7 @@ class RvAdapter(private val list: ArrayList<ColorBean>?, private val context: Co
 
     inner class AddBindViewHolder {
 
-        fun setBindViewHolder(holder: ItemViewHolder, arrayList: ArrayList<ColorBean>?, position: Int) {
+        fun setBindViewHolder(holder: ItemViewHolder, arrayList: ArrayList<Color>?, position: Int) {
             val mainBean = arrayList?.get(position)
             holder.bindItem(mainBean)
         }

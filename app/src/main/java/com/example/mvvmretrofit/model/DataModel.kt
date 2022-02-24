@@ -2,8 +2,7 @@ package com.example.mvvmretrofit.model
 
 import android.util.Log
 import com.example.mvvmretrofit.impl.API
-import com.example.mvvmretrofit.bean.ColorBean
-import com.example.mvvmretrofit.db.DbManager
+import com.example.mvvmretrofit.bean.Color
 import com.google.gson.GsonBuilder
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
@@ -20,7 +19,7 @@ class DataModel {
         fun getText(text: String?)
     }
     interface Dynamic {
-        fun getList(arrayList: ArrayList<ColorBean>)
+        fun getList(arrayList: ArrayList<Color>)
     }
 
     fun getTitle(text: Text) {
@@ -34,7 +33,7 @@ class DataModel {
 
     }
 
-    fun getList(dynamic: Dynamic, dbManager: DbManager) {
+    fun getList(dynamic: Dynamic) {
 
         val gson = GsonBuilder()
             .setDateFormat("yyyy-MM-dd HH:mm:ss")
@@ -54,7 +53,7 @@ class DataModel {
         val observable1 = apiService.observableData1()
         val observable2 = apiService.observableData2()
 
-        val arrayList = ArrayList<ColorBean>()
+        val arrayList = ArrayList<Color>()
 
         observable1
             .subscribeOn(Schedulers.io()) // （觀察者）切換到IO線程進行網絡請求1
@@ -78,21 +77,17 @@ class DataModel {
             /*.subscribe({ response -> // 對第2次網絡請求返回的結果進行操作
                 arrayList.addAll(ArrayList(response.filter { it.id.toInt() in 6..10  }))
                 dynamic.getList(arrayList)
-                if(arrayList.size > 5) {
-                    sqlInsert(dbManager, arrayList)
-                }
                 Log.d("取得 result2 ", "${arrayList.size}")
             }, { Log.e("取得 Api Error ","網路連線失敗") })*/
 
         Observable.merge(observable1, observable2).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe{ list->
             if(arrayList.isEmpty()){
-                arrayList.addAll(ArrayList(list.filter { it.id.toInt() < 6 }))
+                arrayList.addAll(ArrayList(list.filter { it.id < 6 }))
             }else{
-                arrayList.addAll(ArrayList(list.filter { it.id.toInt() in 6..10 }))
-                sqlInsert(dbManager, arrayList)
+                arrayList.addAll(ArrayList(list.filter { it.id in 6..10 }))
             }
             dynamic.getList(arrayList)
-            Log.d("取得result size : ", "${arrayList.size}")
+            Log.d("取得result size ", "${arrayList.size}")
         }
 
         /*
@@ -120,15 +115,6 @@ class DataModel {
 
             }
         */
-
-    }
-
-    private fun sqlInsert(dbManager: DbManager, arrayList: ArrayList<ColorBean>) {
-
-        arrayList.forEach {
-            dbManager.addColors(it)
-        }
-        dbManager.closeDb()
 
     }
 

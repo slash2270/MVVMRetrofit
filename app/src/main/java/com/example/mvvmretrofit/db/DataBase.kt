@@ -2,9 +2,9 @@ package com.example.mvvmretrofit.db
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import com.example.mvvmretrofit.bean.ColorBean
+import com.example.mvvmretrofit.bean.Color
 
-@Database(entities = [ColorBean::class], version = 1, exportSchema = false)
+@Database(entities = [Color::class], version = 2, exportSchema = false)
 abstract class DataBase : RoomDatabase() {
     abstract fun dbDao(): DbDao
 }

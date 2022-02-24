@@ -4,33 +4,46 @@ import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.observe
 import com.example.mvvmretrofit.R
 import com.example.mvvmretrofit.databinding.ActivityMainBinding
 import com.example.mvvmretrofit.db.DbManager
 import com.example.mvvmretrofit.model.MainViewModel
+import kotlinx.coroutines.*
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), CoroutineScope by MainScope(){
 
-    private val dbManager = DbManager()
+    private lateinit var dbManager: DbManager
+    private lateinit var binding: ActivityMainBinding
+    private lateinit var viewModel: MainViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        dbManager = DbManager()
         dbManager.createDb(applicationContext)
 
-        val binding: ActivityMainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main)
-        val viewModel = MainViewModel(binding)
-        viewModel.recycler(this)
-        viewModel.data(applicationContext, dbManager)
-        viewModel.listData.observe(this){
-            if (binding.recyclerView.adapter != null) {
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
+        viewModel = MainViewModel()
+        viewModel.recycler(this, binding)
+        viewModel.data(applicationContext, binding, dbManager)
+        viewModel.listData.observe(this) { listColorBean ->
+            if (listColorBean.size > 0) {
                 binding.recyclerView.adapter?.notifyDataSetChanged()
+                /*launch(Dispatchers.Main) {
+                    workThread(listColorBean)
+                }
+                dbManager.closeDb()*/
             }
         }
         binding.model = viewModel
 
     }
+
+    /*private suspend fun workThread(arrayList: ArrayList<ColorBean>) = withContext(Dispatchers.IO) {
+        arrayList.forEach {
+            dbManager.addColors(it)
+        }
+    }*/
 
     override fun onRestart() {
         super.onRestart()

@@ -7,7 +7,7 @@
 
         <variable
             name="item"
-            type="com.example.mvvmretrofit.bean.ColorBean" />
+            type="com.example.mvvmretrofit.bean.Color" />
 
     </data>
 
@@ -42,7 +42,7 @@
                     android:gravity="center"
                     android:maxLength="20"
                     android:maxLines="1"
-                    android:text="@{item.id}"
+                    android:text="@{String.valueOf(item.id)}"
                     android:textColor="@color/black" />
 
                 <TextView
