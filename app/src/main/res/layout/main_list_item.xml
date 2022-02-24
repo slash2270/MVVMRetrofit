@@ -7,7 +7,7 @@
 
         <variable
             name="item"
-            type="com.example.mvvmretrofit.bean.Color" />
+            type="com.example.mvvmretrofit.bean.ColorBean" />
 
     </data>
 

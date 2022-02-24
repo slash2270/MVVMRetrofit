@@ -4,9 +4,9 @@ import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.room.Room
 import kotlin.jvm.Synchronized
-import com.example.mvvmretrofit.bean.Color
+import com.example.mvvmretrofit.bean.ColorBean
 
-class DbManager {
+class ColorRepository {
 
     @Volatile
     private var mDataBase: DataBase? = null
@@ -26,26 +26,26 @@ class DbManager {
 
     //新增
     @Synchronized
-    fun addColors(color: Color) {
-        mDataBase?.dbDao()?.addColors(color)
+    fun addColors(colorBean: ColorBean) {
+        mDataBase?.dbDao()?.addColors(colorBean)
     }
 
     //新增
     @Synchronized
-    fun addColor(color: Color) {
-        mDataBase?.dbDao()?.addColor(color)
+    fun addColor(colorBean: ColorBean) {
+        mDataBase?.dbDao()?.addColor(colorBean)
     }
 
     //查询
     @Synchronized
-    fun getColor(title: String): Color? {
+    fun getColor(title: String): ColorBean? {
         return mDataBase?.dbDao()?.getColor(title)
     }
 
     //删除
     @Synchronized
-    fun deleteColor(color: Color) {
-        mDataBase?.dbDao()?.deleteColor(color)
+    fun deleteColor(colorBean: ColorBean) {
+        mDataBase?.dbDao()?.deleteColor(colorBean)
     }
 
     @Synchronized
@@ -55,13 +55,13 @@ class DbManager {
 
     //修改
     @Synchronized
-    fun updateColor(color: Color) {
-        mDataBase?.dbDao()?.updateColor(color)
+    fun updateColor(colorBean: ColorBean) {
+        mDataBase?.dbDao()?.updateColor(colorBean)
     }
 
     //取得Table
     @Synchronized
-    fun getColors(): LiveData<List<Color>>? {
+    fun getColors(): LiveData<List<ColorBean>>? {
         return mDataBase?.dbDao()?.getColors()
     }
 

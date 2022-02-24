@@ -5,7 +5,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity(tableName = "color")
-class Color(
+class ColorBean(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo (name = "id") val id: Int,
     @ColumnInfo (name = "title") val title: String,

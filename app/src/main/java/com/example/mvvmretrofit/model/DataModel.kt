@@ -2,7 +2,7 @@ package com.example.mvvmretrofit.model
 
 import android.util.Log
 import com.example.mvvmretrofit.impl.API
-import com.example.mvvmretrofit.bean.Color
+import com.example.mvvmretrofit.bean.ColorBean
 import com.google.gson.GsonBuilder
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
@@ -19,7 +19,7 @@ class DataModel {
         fun getText(text: String?)
     }
     interface Dynamic {
-        fun getList(arrayList: ArrayList<Color>)
+        fun getList(arrayList: ArrayList<ColorBean>)
     }
 
     fun getTitle(text: Text) {
@@ -53,7 +53,7 @@ class DataModel {
         val observable1 = apiService.observableData1()
         val observable2 = apiService.observableData2()
 
-        val arrayList = ArrayList<Color>()
+        val arrayList = ArrayList<ColorBean>()
 
         observable1
             .subscribeOn(Schedulers.io()) // （觀察者）切換到IO線程進行網絡請求1

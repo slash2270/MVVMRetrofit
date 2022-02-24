@@ -6,18 +6,18 @@ import android.util.Log
 import androidx.databinding.ObservableField
 import androidx.lifecycle.*
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.mvvmretrofit.bean.Color
+import com.example.mvvmretrofit.bean.ColorBean
 import androidx.lifecycle.MutableLiveData
 import com.example.mvvmretrofit.adapter.RvAdapter
 import com.example.mvvmretrofit.databinding.ActivityMainBinding
-import com.example.mvvmretrofit.db.DbManager
+import com.example.mvvmretrofit.db.ColorRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlin.collections.ArrayList
 
 class MainViewModel: ViewModel() {
 
-    val listData: MutableLiveData<ArrayList<Color>> = MutableLiveData<ArrayList<Color>>()
+    val listData: MutableLiveData<ArrayList<ColorBean>> = MutableLiveData<ArrayList<ColorBean>>()
     val ovf = ObservableField("")
 
     fun recycler(activity: Activity, binding: ActivityMainBinding) {
@@ -27,7 +27,7 @@ class MainViewModel: ViewModel() {
 
     }
 
-    fun data(context: Context, binding: ActivityMainBinding, dbManager: DbManager) {
+    fun data(context: Context, binding: ActivityMainBinding, colorRepository: ColorRepository) {
 
         val dataModel = DataModel()
         dataModel.getTitle(object : DataModel.Text {
@@ -36,18 +36,18 @@ class MainViewModel: ViewModel() {
             }
         })
         dataModel.getList(object : DataModel.Dynamic{
-            override fun getList(arrayList: ArrayList<Color>) {
+            override fun getList(arrayList: ArrayList<ColorBean>) {
                 listData.value = arrayList
                 adapter(context, binding)
                 viewModelScope.launch(Dispatchers.IO) {
                     arrayList.forEach {
-                        dbManager.addColors(it)
+                        colorRepository.addColors(it)
                     }
                 }
                 Log.d("取得 DB List ", "${listData.value?.size}")
             }
         })
-        dbManager.closeDb()
+        colorRepository.closeDb()
 
     }
 
