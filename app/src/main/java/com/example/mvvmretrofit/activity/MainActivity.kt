@@ -8,6 +8,7 @@ import com.example.mvvmretrofit.R
 import com.example.mvvmretrofit.databinding.ActivityMainBinding
 import com.example.mvvmretrofit.db.ColorRepository
 import com.example.mvvmretrofit.model.MainViewModel
+import com.example.mvvmretrofit.util.DataStoreFactory
 import kotlinx.coroutines.*
 
 class MainActivity : AppCompatActivity(), CoroutineScope by MainScope(){
@@ -15,13 +16,12 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope(){
     private lateinit var colorRepository: ColorRepository
     private lateinit var binding: ActivityMainBinding
     private lateinit var viewModel: MainViewModel
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        DataStoreFactory.init(applicationContext)
 
         colorRepository = ColorRepository()
         colorRepository.createDb(applicationContext)
-
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         viewModel = MainViewModel()
         viewModel.recycler(this, binding)

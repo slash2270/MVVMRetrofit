@@ -3,6 +3,7 @@ package com.example.mvvmretrofit.model
 import android.util.Log
 import com.example.mvvmretrofit.impl.API
 import com.example.mvvmretrofit.bean.ColorBean
+import com.example.mvvmretrofit.util.DataStoreUtils
 import com.google.gson.GsonBuilder
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
@@ -14,22 +15,17 @@ import java.lang.StringBuilder
 import kotlin.collections.ArrayList
 
 class DataModel {
-
-    interface Text {
-        fun getText(text: String?)
-    }
     interface Dynamic {
         fun getList(arrayList: ArrayList<ColorBean>)
     }
-
-    fun getTitle(text: Text) {
+    fun getTitle() {
 
         val strBuilder = StringBuilder()
         listOf("Id", "\t", "\t", "\t", "\t", "\t", "\t", "\t", "\t", "\t", "\t", "\t", "\t", "Title", "\t", "\t", "\t", "\t", "\t", "\t", "\t", "\t", "\t", "\t", "\t", "\t", "Content")
             .forEach {
                 strBuilder.append(it)
             }
-        text.getText(strBuilder.toString())
+        DataStoreUtils.putString("title", strBuilder.toString())
 
     }
 
