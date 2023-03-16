@@ -3,11 +3,12 @@ package com.example.mvvmretrofit.bean
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.google.gson.annotations.SerializedName
 
 @Entity(tableName = "color")
-class ColorBean(
+data class ColorBean(
     @PrimaryKey(autoGenerate = true)
-    @ColumnInfo (name = "id") val id: Int,
-    @ColumnInfo (name = "title") val title: String,
-    @ColumnInfo (name = "thumbnailUrl") val thumbnailUrl: String
+    @SerializedName("id")@ColumnInfo (name = "id") val id: Int,
+    @SerializedName("title")@ColumnInfo (name = "title") val title: String,
+    @SerializedName("thumbnailUrl")@ColumnInfo (name = "thumbnailUrl") val thumbnailUrl: String
 )

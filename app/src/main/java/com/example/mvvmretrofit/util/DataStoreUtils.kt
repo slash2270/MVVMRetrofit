@@ -1,7 +1,9 @@
 package com.example.mvvmretrofit.util
 
+import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.*
+import com.example.mvvmretrofit.util.DataStoreFactory.beanDataStore
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import java.io.IOException
@@ -102,6 +104,22 @@ class DataStoreUtils(val data: Flow<Any>) {
             }
         }
 
+        fun <T> removeData(key: String, value: T?) {
+            scope.launch {
+                dataStore.edit {
+                    if (value != null) it.remove(stringPreferencesKey(key))
+                }
+            }
+        }
+
+        fun clearData() {
+            scope.launch {
+                dataStore.edit {
+                    it.clear()
+                }
+            }
+        }
+
         private suspend fun <T> readNonNullFlowData(key: Preferences.Key<T>, defValue: T): Flow<T> {
             return dataStoreData.catch {
                 if (it is IOException) {
@@ -134,6 +152,18 @@ class DataStoreUtils(val data: Flow<Any>) {
                 }
             }
         }
+
+        suspend fun updateDataStore(context: Context) {
+            //context.beanDataStore.data.first() // 讀取方式
+            update(context) // 寫入方式
+        }
+
+        private suspend fun update(context: Context) {
+            context.beanDataStore.updateData { data ->
+                data.toBuilder().setId("Id").setTitle("Title").setThumbnailUrl("Content").build()
+            }
+        }
+
     }
 
 }

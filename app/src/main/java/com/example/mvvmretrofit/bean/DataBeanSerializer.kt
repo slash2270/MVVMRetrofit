@@ -1,10 +1,7 @@
 package com.example.mvvmretrofit.bean
 
-import android.content.Context
 import androidx.datastore.core.CorruptionException
-import androidx.datastore.core.DataStore
 import androidx.datastore.core.Serializer
-import androidx.datastore.dataStore
 import androidx.datastore.preferences.protobuf.InvalidProtocolBufferException
 import com.example.mvvmretrofit.DataBean
 import java.io.InputStream
@@ -26,10 +23,3 @@ object DataBeanSerializer: Serializer<DataBean> {
         t.writeTo(output)
     }
 }
-
-const val DATA_STORE_USER_FILE_NAME = "data_bean.pb"
-val Context.userDataStore : DataStore<DataBean> by dataStore(
-    fileName = DATA_STORE_USER_FILE_NAME,
-    serializer = DataBeanSerializer
-)
-

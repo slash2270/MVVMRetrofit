@@ -8,6 +8,9 @@ import com.google.gson.GsonBuilder
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.schedulers.Schedulers
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava3.RxJava3CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
@@ -21,7 +24,7 @@ class DataModel {
     fun getTitle() {
 
         val strBuilder = StringBuilder()
-        listOf("Id", "\t", "\t", "\t", "\t", "\t", "\t", "\t", "\t", "\t", "\t", "\t", "\t", "Title", "\t", "\t", "\t", "\t", "\t", "\t", "\t", "\t", "\t", "\t", "\t", "\t", "Content")
+        listOf("Id", "\t", "\t", "\t", "\t", "\t", "\t", "\t", "\t", "\t", "\t", "\t", "\t", "Title", "\t", "\t", "\t", "\t", "\t", "\t", "\t", "\t", "\t", "\t", "\t", "\t", "\t", "\t", "Content")
             .forEach {
                 strBuilder.append(it)
             }
@@ -29,27 +32,27 @@ class DataModel {
 
     }
 
+    val gson = GsonBuilder()
+        .setDateFormat("yyyy-MM-dd HH:mm:ss")
+        .create()
+
+    val retrofit = Retrofit.Builder()
+        //與 RxJava 1 和 RxJava 2 適配器不同，RxJava 3 適配器的 create() 方法默認會產生異步 HTTP 請求。對於同步請求使用 createSynchronous() 和在調度器上同步使用 createWithScheduler(..)
+        // Or .addCallAdapterFactory(RxJava3CallAdapterFactory.createWithScheduler(Schedulers.io()))
+        .addCallAdapterFactory(RxJava3CallAdapterFactory.createSynchronous())
+        .addConverterFactory(GsonConverterFactory.create(gson))
+        .baseUrl("https://jsonplaceholder.typicode.com/") // url
+        .build()
+
+    val apiService = retrofit.create(API::class.java)
+
     fun getList(dynamic: Dynamic) {
 
-        val gson = GsonBuilder()
-            .setDateFormat("yyyy-MM-dd HH:mm:ss")
-            .create()
-
-        val  retrofit = Retrofit.Builder()
-             //與 RxJava 1 和 RxJava 2 適配器不同，RxJava 3 適配器的 create() 方法默認會產生異步 HTTP 請求。對於同步請求使用 createSynchronous() 和在調度器上同步使用 createWithScheduler(..)
-            // Or .addCallAdapterFactory(RxJava3CallAdapterFactory.createWithScheduler(Schedulers.io()))
-            .addCallAdapterFactory(RxJava3CallAdapterFactory.createSynchronous())
-            .addConverterFactory(GsonConverterFactory.create(gson))
-            .baseUrl("https://jsonplaceholder.typicode.com/") // url
-            .build()
-
-        val apiService = retrofit.create(API::class.java)
+        val arrayList = ArrayList<ColorBean>()
 
         // 連續連線
         val observable1 = apiService.observableData1()
         val observable2 = apiService.observableData2()
-
-        val arrayList = ArrayList<ColorBean>()
 
         observable1
             .subscribeOn(Schedulers.io()) // （觀察者）切換到IO線程進行網絡請求1
@@ -86,32 +89,34 @@ class DataModel {
             Log.d("取得result size ", "${arrayList.size}")
         }
 
-        /*
-            CoroutineScope(Dispatchers.IO).launch {
+    }
 
-                apiService.callData().enqueue(object : Callback<List<ColorBean>> {
+    fun getDataList(): ArrayList<ColorBean> {
 
-                    override fun onResponse(
-                        call: Call<List<ColorBean>>,
-                        response: Response<List<ColorBean>>
-                    ) {
-                        val data = response.body()
-                        if (response.isSuccessful && data != null) {
-                            response(data, arrayList)
-                            dynamic.getList(arrayList)
-                        }
-                        //Log.d("取得1 ", arrView.size.toString())
+        val arrayList = ArrayList<ColorBean>()
 
+        CoroutineScope(Dispatchers.IO).launch {
+
+            apiService.callData().enqueue(object : retrofit2.Callback<List<ColorBean>> {
+
+                override fun onResponse(call: retrofit2.Call<List<ColorBean>>, response: retrofit2.Response<List<ColorBean>>) {
+                    val data = response.body()
+                    if (response.isSuccessful && data != null) {
+                        arrayList.addAll(ArrayList(data.filter { it.id in 10 ..19 }))
                     }
+                    Log.d("取得PageList:", arrayList.size.toString())
 
-                    override fun onFailure(call: Call<List<ColorBean>>, throwable: Throwable) {
-                        //Log.d("取得2 " , throwable.toString().trim { it <= ' ' })
-                    }
-                })
+                }
 
-            }
-        */
+                override fun onFailure(call: retrofit2.Call<List<ColorBean>>, throwable: Throwable) {
+                    //Log.d("取得2 " , throwable.toString().trim { it <= ' ' })
+                }
 
+            })
+
+        }
+
+        return arrayList
     }
 
 }
