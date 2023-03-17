@@ -44,7 +44,6 @@ class PagingAdapter(private val activity: MainActivity) : PagingDataAdapter<Gith
             itemGithubBinding.nameText.text = item.name
             itemGithubBinding.descriptionText.text = item.description
             itemGithubBinding.starCountText.text = item.starCount.toString()
-            Log.d("取得Url", item.owner.avatar_url.toString())
             itemGithubBinding.ivLogo.load(item.owner.avatar_url){
                 crossfade(true)     //开启淡入淡出
                 crossfade(3000)
