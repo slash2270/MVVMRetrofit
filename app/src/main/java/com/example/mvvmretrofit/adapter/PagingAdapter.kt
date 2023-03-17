@@ -1,20 +1,25 @@
 package com.example.mvvmretrofit.adapter
 
 import android.content.Intent
+import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
-import android.widget.TextView
+import androidx.databinding.DataBindingUtil
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.RecyclerView
+import coil.load
+import coil.transform.BlurTransformation
+import coil.transform.GrayscaleTransformation
+import coil.transform.RoundedCornersTransformation
 import com.example.mvvmretrofit.R
 import com.example.mvvmretrofit.activity.MainActivity
 import com.example.mvvmretrofit.activity.WebActivity
 import com.example.mvvmretrofit.bean.GithubSearchBean
+import com.example.mvvmretrofit.databinding.ItemGithubBinding
 
-class PagingAdapter(private val activity: MainActivity) : PagingDataAdapter<GithubSearchBean, PagingAdapter.ViewHolder>(diff) {
+class PagingAdapter(private val activity: MainActivity) : PagingDataAdapter<GithubSearchBean, ItemViewHolder>(diff) {
+
+    private lateinit var itemGithubBinding: ItemGithubBinding
 
     companion object {
         private val diff = object : DiffUtil.ItemCallback<GithubSearchBean>() {
@@ -28,25 +33,27 @@ class PagingAdapter(private val activity: MainActivity) : PagingDataAdapter<Gith
         }
     }
 
-    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val name: TextView = itemView.findViewById(R.id.name_text)
-        val description: TextView = itemView.findViewById(R.id.description_text)
-        val starCount: TextView = itemView.findViewById(R.id.star_count_text)
-        val view: LinearLayout = itemView.findViewById(R.id.ll_root)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
+        itemGithubBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.context), R.layout.item_github, parent, false)
+        return ItemViewHolder(itemGithubBinding)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_github, parent, false)
-        return ViewHolder(view)
-    }
-
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
         val item = getItem(position)
         if (item != null) {
-            holder.name.text = item.name
-            holder.description.text = item.description
-            holder.starCount.text = item.starCount.toString()
-            holder.view.setOnClickListener {
+            itemGithubBinding.nameText.text = item.name
+            itemGithubBinding.descriptionText.text = item.description
+            itemGithubBinding.starCountText.text = item.starCount.toString()
+            Log.d("取得Url", item.owner.avatar_url.toString())
+            itemGithubBinding.ivLogo.load(item.owner.avatar_url){
+                crossfade(true)     //开启淡入淡出
+                crossfade(3000)
+                placeholder(R.drawable.ic_launcher_foreground)   //添加占位图
+                transformations(RoundedCornersTransformation(topRight = 10f, topLeft = 10f, bottomLeft = 10f, bottomRight = 10f)) //图片变换  圆形
+//                transformations(BlurTransformation(context = activity, radius = 5f, sampling = 5f))
+//                transformations(GrayscaleTransformation())
+            }
+            itemGithubBinding.llRoot.setOnClickListener {
                 val intent = Intent(activity, WebActivity::class.java)
                 intent.putExtra("url", item.htmlUrl)
                 activity.startActivity(intent)
