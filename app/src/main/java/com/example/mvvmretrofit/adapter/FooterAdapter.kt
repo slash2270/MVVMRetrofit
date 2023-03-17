@@ -19,7 +19,7 @@ class FooterAdapter(val retry: () -> Unit) : LoadStateAdapter<FooterAdapter.View
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, loadState: LoadState): ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.footer_item, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_footer, parent, false)
         val holder = ViewHolder(view)
         holder.retryButton.setOnClickListener {
             retry()

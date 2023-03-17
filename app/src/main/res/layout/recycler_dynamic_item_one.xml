@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+        <variable name="viewModel" type="com.example.mvvmretrofit.model.DynamicItemViewModel"/>
+    </data>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:clickable="true"
+            android:onClick="@{viewModel.click}"
+            android:layout_margin="10dp"
+            android:background="@color/purple_200"
+            android:text="@{viewModel.text}"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:focusable="true" />
+
+    </LinearLayout>
+
+</layout>

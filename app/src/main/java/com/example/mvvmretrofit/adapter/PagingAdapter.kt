@@ -36,7 +36,7 @@ class PagingAdapter(private val activity: MainActivity) : PagingDataAdapter<Gith
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.github_item, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_github, parent, false)
         return ViewHolder(view)
     }
 

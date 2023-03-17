@@ -6,32 +6,34 @@ import android.view.KeyEvent
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.mvvmretrofit.R
+import com.example.mvvmretrofit.adapter.RvAdapter
 import com.example.mvvmretrofit.databinding.ActivityMainBinding
 import com.example.mvvmretrofit.db.ColorRepository
 import com.example.mvvmretrofit.model.MainViewModel
 import com.example.mvvmretrofit.util.DataStoreFactory
 import com.example.mvvmretrofit.util.DataStoreUtils
+import com.example.mvvmretrofit.util.Utils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
 
 class MainActivity : AppCompatActivity(), CoroutineScope by MainScope(){
 
     private lateinit var colorRepository: ColorRepository
-    private lateinit var binding: ActivityMainBinding
-    private lateinit var viewModel: MainViewModel
     private var mExitTime: Long = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         DataStoreFactory.init(applicationContext)
+        val binding: ActivityMainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main)
+        val viewModel = MainViewModel()
         colorRepository = ColorRepository()
         colorRepository.createDb(applicationContext)
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
-        viewModel = MainViewModel()
-        viewModel.recycler(this, binding)
-        viewModel.data(this, binding, colorRepository)
+        Utils.recycler(this, binding.recyclerView, true, LinearLayoutManager.VERTICAL)
+        binding.recyclerView.adapter = RvAdapter(this, colorRepository)
         binding.model = viewModel
+        colorRepository.closeDb()
     }
 
     /*private suspend fun workThread(arrayList: ArrayList<ColorBean>) = withContext(Dispatchers.IO) {
@@ -47,24 +49,24 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope(){
 
     override fun onStart() {
         super.onStart()
-        Log.e("--------onRestart","onRestart")
+        Log.e("--------onStart","onStart")
     }
 
     override fun onResume() {
         super.onResume()
-        Log.e("--------onRestart","onRestart")
+        Log.e("--------onResume","onResume")
     }
 
     override fun onStop() {
         super.onStop()
-        Log.e("--------onRestart","onRestart")
+        Log.e("--------onStop","onStop")
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        DataStoreUtils.clearData()
+        DataStoreUtils().clearData()
         colorRepository.deleteColorTable()
-        Log.e("--------onRestart","onRestart")
+        Log.e("--------onDestroy","onDestroy")
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {

@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">MVVMRetrofit</string>
+    <string name="add">增加</string>
+    <string name="delete">删除</string>
+    <string name="revice">修改</string>
+    <string name="edittext_notice">輸入要改變的item的position</string>
 </resources>

@@ -14,7 +14,6 @@ import kotlinx.coroutines.launch
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava3.RxJava3CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
-import java.lang.StringBuilder
 import kotlin.collections.ArrayList
 
 class DataModel {
@@ -22,21 +21,17 @@ class DataModel {
         fun getList(arrayList: ArrayList<ColorBean>)
     }
     fun getTitle() {
-
-        val strBuilder = StringBuilder()
-        listOf("Id", "\t", "\t", "\t", "\t", "\t", "\t", "\t", "\t", "\t", "\t", "\t", "\t", "Title", "\t", "\t", "\t", "\t", "\t", "\t", "\t", "\t", "\t", "\t", "\t", "\t", "\t", "\t", "Content")
-            .forEach {
-                strBuilder.append(it)
-            }
-        DataStoreUtils.putString("title", strBuilder.toString())
-
+        val dataStoreUtils = DataStoreUtils()
+        dataStoreUtils.putString("id", "Id")
+        dataStoreUtils.putString("title", "Title")
+        dataStoreUtils.putString("content", "Content")
     }
 
-    val gson = GsonBuilder()
+    private val gson = GsonBuilder()
         .setDateFormat("yyyy-MM-dd HH:mm:ss")
         .create()
 
-    val retrofit = Retrofit.Builder()
+    private val retrofit = Retrofit.Builder()
         //與 RxJava 1 和 RxJava 2 適配器不同，RxJava 3 適配器的 create() 方法默認會產生異步 HTTP 請求。對於同步請求使用 createSynchronous() 和在調度器上同步使用 createWithScheduler(..)
         // Or .addCallAdapterFactory(RxJava3CallAdapterFactory.createWithScheduler(Schedulers.io()))
         .addCallAdapterFactory(RxJava3CallAdapterFactory.createSynchronous())
@@ -44,7 +39,7 @@ class DataModel {
         .baseUrl("https://jsonplaceholder.typicode.com/") // url
         .build()
 
-    val apiService = retrofit.create(API::class.java)
+    private val apiService = retrofit.create(API::class.java)
 
     fun getList(dynamic: Dynamic) {
 
@@ -81,7 +76,7 @@ class DataModel {
 
         Observable.merge(observable1, observable2).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe{ list->
             if(arrayList.isEmpty()){
-                arrayList.addAll(ArrayList(list.filter { it.id < 6 }))
+                arrayList.addAll(ArrayList(list.filter { it.id < 6}))
             }else{
                 arrayList.addAll(ArrayList(list.filter { it.id in 6..10 }))
             }

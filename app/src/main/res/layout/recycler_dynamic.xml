@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:bind="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <import type="android.view.View"/>
+        <import type="com.example.mvvmretrofit.base.BaseLayoutManager"/>
+        <variable name="viewModel" type="com.example.mvvmretrofit.model.DynamicViewModel"/>
+        <variable name="uiViewModel" type="com.example.mvvmretrofit.model.DynamicUiViewModel"/>
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:onClick="@{uiViewModel.add}"
+                android:text="@string/add"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                style="?android:attr/buttonBarButtonStyle" />
+
+            <Button
+                android:onClick="@{uiViewModel.delete}"
+                android:text="@string/delete"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                style="?android:attr/buttonBarButtonStyle" />
+
+            <Button
+                android:onClick="@{uiViewModel.change}"
+                android:text="@string/revice"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                style="?android:attr/buttonBarButtonStyle" />
+
+        </LinearLayout>
+
+        <EditText
+            android:onTextChanged="@{uiViewModel.position}"
+            android:inputType="number"
+            android:hint="@string/edittext_notice"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:autofillHints="" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/my_recycle_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            bind:layoutManager="@{BaseLayoutManager.INSTANCE.linear()}"
+            bind:itemView="@{viewModel.mViewSelector}"
+            bind:items="@{viewModel.dataItems}">
+        </androidx.recyclerview.widget.RecyclerView>
+
+    </LinearLayout>
+
+</layout>
