@@ -59,8 +59,7 @@
             android:layout_height="match_parent"
             bind:layoutManager="@{BaseLayoutManager.INSTANCE.linear()}"
             bind:itemView="@{viewModel.mViewSelector}"
-            bind:items="@{viewModel.dataItems}">
-        </androidx.recyclerview.widget.RecyclerView>
+            bind:items="@{viewModel.dataItems}"/>
 
     </LinearLayout>
 

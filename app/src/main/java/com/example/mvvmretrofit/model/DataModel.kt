@@ -1,7 +1,8 @@
 package com.example.mvvmretrofit.model
 
 import android.util.Log
-import com.example.mvvmretrofit.impl.API
+import com.example.mvvmretrofit.Constants.Companion.PLACEHOLDER_URL
+import com.example.mvvmretrofit.impl.PlaceHolderService
 import com.example.mvvmretrofit.bean.ColorBean
 import com.example.mvvmretrofit.util.DataStoreUtils
 import com.google.gson.GsonBuilder
@@ -25,6 +26,7 @@ class DataModel {
         dataStoreUtils.putString("id", "Id")
         dataStoreUtils.putString("title", "Title")
         dataStoreUtils.putString("content", "Content")
+        dataStoreUtils.putString("color", "Color")
     }
 
     private val gson = GsonBuilder()
@@ -36,10 +38,10 @@ class DataModel {
         // Or .addCallAdapterFactory(RxJava3CallAdapterFactory.createWithScheduler(Schedulers.io()))
         .addCallAdapterFactory(RxJava3CallAdapterFactory.createSynchronous())
         .addConverterFactory(GsonConverterFactory.create(gson))
-        .baseUrl("https://jsonplaceholder.typicode.com/") // url
+        .baseUrl(PLACEHOLDER_URL) // url
         .build()
 
-    private val apiService = retrofit.create(API::class.java)
+    private val apiService = retrofit.create(PlaceHolderService::class.java)
 
     fun getList(dynamic: Dynamic) {
 
@@ -91,9 +93,7 @@ class DataModel {
         val arrayList = ArrayList<ColorBean>()
 
         CoroutineScope(Dispatchers.IO).launch {
-
             apiService.callData().enqueue(object : retrofit2.Callback<List<ColorBean>> {
-
                 override fun onResponse(call: retrofit2.Call<List<ColorBean>>, response: retrofit2.Response<List<ColorBean>>) {
                     val data = response.body()
                     if (response.isSuccessful && data != null) {
@@ -102,13 +102,10 @@ class DataModel {
                     Log.d("取得PageList:", arrayList.size.toString())
 
                 }
-
                 override fun onFailure(call: retrofit2.Call<List<ColorBean>>, throwable: Throwable) {
                     //Log.d("取得2 " , throwable.toString().trim { it <= ' ' })
                 }
-
             })
-
         }
 
         return arrayList

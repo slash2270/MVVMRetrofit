@@ -1,5 +1,6 @@
-package network
+package com.example.mvvmretrofit.network
 
+import com.example.mvvmretrofit.Constants.Companion.PAGING_URL
 import com.example.mvvmretrofit.impl.PagingService
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -11,7 +12,7 @@ object PagingApiManager {
             .client(
                 OkHttpClient.Builder().addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
                 .build())
-            .baseUrl(PagingService.BASE_URL)
+            .baseUrl(PAGING_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
         retrofit.create(PagingService::class.java)

@@ -1,14 +1,14 @@
 package com.example.mvvmretrofit.adapter
 
 import android.content.Intent
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import coil.load
-import coil.transform.BlurTransformation
-import coil.transform.GrayscaleTransformation
+import coil.request.CachePolicy
 import coil.transform.RoundedCornersTransformation
 import com.example.mvvmretrofit.R
 import com.example.mvvmretrofit.activity.MainActivity
@@ -44,12 +44,23 @@ class PagingAdapter(private val activity: MainActivity) : PagingDataAdapter<Gith
             itemGithubBinding.descriptionText.text = item.description
             itemGithubBinding.starCountText.text = item.starCount.toString()
             itemGithubBinding.ivLogo.load(item.owner.avatar_url){
-                crossfade(true)     //开启淡入淡出
-                crossfade(3000)
-                placeholder(R.drawable.ic_launcher_foreground)   //添加占位图
                 transformations(RoundedCornersTransformation(topRight = 10f, topLeft = 10f, bottomLeft = 10f, bottomRight = 10f)) //图片变换  圆形
 //                transformations(BlurTransformation(context = activity, radius = 5f, sampling = 5f))
 //                transformations(GrayscaleTransformation())
+                listener(
+                    onStart ={ request ->
+                        Log.d("lpf", "PlaceHolder onError 開始加載...")
+                    },
+                    onError = { request, throwable ->
+                        Log.d("lpf", "PlaceHolder onError 加載失敗...")
+                    },
+                    onCancel = { request ->
+                        Log.d("lpf", "PlaceHolder onCancel 加載重載中...")
+                    },
+                    onSuccess = { request, metadata ->
+                        Log.d("lpf", "PlaceHolder onSuccess 加載成功...")
+                    }
+                )
             }
             itemGithubBinding.llRoot.setOnClickListener {
                 val intent = Intent(activity, WebActivity::class.java)

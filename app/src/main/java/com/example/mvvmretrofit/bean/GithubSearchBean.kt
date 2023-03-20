@@ -1,7 +1,6 @@
 package com.example.mvvmretrofit.bean
 
 import com.google.gson.annotations.SerializedName
-import java.util.Arrays
 
 data class GithubSearchBean(
     @SerializedName("id") val id: Int?,

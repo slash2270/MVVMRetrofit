@@ -3,7 +3,7 @@ package com.example.mvvmretrofit.data
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.example.mvvmretrofit.bean.GithubSearchBean
-import network.PagingApiManager
+import com.example.mvvmretrofit.network.PagingApiManager
 
 /**
  * 数据源

@@ -9,6 +9,7 @@ class TitleViewModel : ViewModel() {
     val id = ObservableField("")
     val title = ObservableField("")
     val content = ObservableField("")
+    val color = ObservableField("")
 
     init {
         DataModel().getTitle()
@@ -16,6 +17,7 @@ class TitleViewModel : ViewModel() {
         id.set(dataStoreUtils.getString("id", "Id"))
         title.set(dataStoreUtils.getString("title", "Title"))
         content.set(dataStoreUtils.getString("content", "Content"))
+        color.set(dataStoreUtils.getString("color", "Color"))
 //        viewModelScope.launch(Dispatchers.IO){
 //            dataStoreUtils.updateDataStore(activity)
 //            val data = activity.beanDataStore.data.first()
